@@ -1,6 +1,7 @@
 import express from "express";
 import db from "./config/dbConnect.js";
 import livros from "./models/Livro.js"
+import routes from "./routes/index.js";
 
 db.on('error', console.log.bind(console, 'Erro de conexão.'));
 db.once('open', () => {
@@ -10,6 +11,8 @@ db.once('open', () => {
 const app = express()
 
 app.use(express.json()) //interpreta o via post ou put e transforma em objeto para manipular
+
+routes(app);
 
 // const livros = [
 //   {
@@ -21,16 +24,6 @@ app.use(express.json()) //interpreta o via post ou put e transforma em objeto pa
 //     titulo: 'O Hobbit'
 //   }
 // ]
-
-app.get('/', (req, res) => {
-  res.status(200).send('Funcionando!')
-})
-
-app.get('/livros', (req, res) => {
-  livros.find((err, livros) => {
-    res.status(200).json(livros)
-  }) //buscar os livros encontrados
-})
 
 app.get('/livros/:id', (req, res) => {
   let index = buscaLivro(req.params.id)
@@ -49,7 +42,9 @@ app.put('/livros/:id', (req, res) => {
 })
 
 app.delete('/livros/:id', (req, res) => {
-  let { id } = req.params
+  let {
+    id
+  } = req.params
   let index = buscaLivro(id)
   livros.splice(index, 1)
   res.send(`Livro ${id} removido com sucesso.`)
